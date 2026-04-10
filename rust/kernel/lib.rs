@@ -47,6 +47,9 @@
 // To be determined.
 #![feature(used_with_arg)]
 //
+// Needed for PowerPC inline assembly.
+#![cfg_attr(CONFIG_GAMECUBE_COMMON, feature(asm_experimental_arch))]
+//
 // `feature(derive_coerce_pointee)` is expected to become stable. Before Rust
 // 1.84.0, it did not exist, so enable the predecessor features.
 #![cfg_attr(CONFIG_RUSTC_HAS_COERCE_POINTEE, feature(derive_coerce_pointee))]
