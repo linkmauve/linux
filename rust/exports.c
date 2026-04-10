@@ -20,6 +20,11 @@
 #include "exports_bindings_generated.h"
 #include "exports_kernel_generated.h"
 
+void __udivdi3(void) {
+}
+void __umoddi3(void) {
+}
+
 // For modules using `rust/build_error.rs`.
 #ifdef CONFIG_RUST_BUILD_ASSERT_ALLOW
 EXPORT_SYMBOL_RUST_GPL(rust_build_error);
