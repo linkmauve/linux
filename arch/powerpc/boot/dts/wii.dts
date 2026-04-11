@@ -43,6 +43,11 @@
 			alloc-ranges = <0x10000000 0x04000000>; /* MEM2 */
 		};
 
+		FIFO: fifo@1734000 {
+			reg = <0x01734000 0x00040000>; /* 256 KiB */
+			no-map;
+		};
+
 		XFB: xfb@1774000 {
 			reg = <0x01774000 0x0008c000>;
 			no-map;
@@ -81,8 +86,13 @@
 		gx@c001000 {
 			compatible = "nintendo,hollywood-gx",
 					"nintendo,flipper-gx";
-			reg = <0x0c001000 0x100>;
+			reg = <0x0c000000 0x100	/* CP registers */
+			       0x0c001000 0x100	/* GX registers */
+			       0x0c003000 0x100	/* PI registers */
+			       0x0c008000 4>;	/* write-gather pipe */
 			interrupts = <9 10>;
+			fifo-start = <0x01734000>; /* end-of-mem1 - xfb-size - fifo-size */
+			fifo-size = <0x40000>;     /* 256 * 1024 bytes */
 		};
 
 		video@c002000 {
