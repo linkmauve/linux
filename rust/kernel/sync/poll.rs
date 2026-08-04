@@ -172,6 +172,6 @@ impl Drop for PollCondVarBox {
         unsafe { bindings::__wake_up_pollfree((*ptr).inner.inner.wait_queue_head.get()) };
 
         // SAFETY: This was allocated using `KBox::pin_init`, so it can be freed with `kvfree`.
-        unsafe { bindings::kvfree_call_rcu((*ptr).rcu.get(), ptr.cast::<ffi::c_void>()) };
+        unsafe { bindings::kvfree_call_rcu((*ptr).rcu.get() as *mut _, ptr.cast::<ffi::c_void>()) };
     }
 }
