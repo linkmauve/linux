@@ -472,7 +472,7 @@ static int rv3029_ioctl(struct device *dev, unsigned int cmd, unsigned long arg)
 	}
 }
 
-static int rv3029_nvram_write(void *priv, unsigned int offset, void *val,
+static int rv3029_nvram_write(void *priv, unsigned int offset, const void *val,
 			      size_t bytes)
 {
 	return regmap_bulk_write(priv, RV3029_RAM_PAGE + offset, val, bytes);
@@ -714,7 +714,7 @@ static int rv3029_probe(struct device *dev, struct regmap *regmap, int irq,
 		.size = RV3029_RAM_SECTION_LEN,
 		.type = NVMEM_TYPE_BATTERY_BACKED,
 		.reg_read = rv3029_nvram_read,
-		.reg_write = rv3029_nvram_write,
+		.reg_write_const = rv3029_nvram_write,
 	};
 	int rc = 0;
 

@@ -328,7 +328,7 @@ static int pcf85363_nvram_read(void *priv, unsigned int offset, void *val,
 				val, bytes);
 }
 
-static int pcf85363_nvram_write(void *priv, unsigned int offset, void *val,
+static int pcf85363_nvram_write(void *priv, unsigned int offset, const void *val,
 				size_t bytes)
 {
 	struct pcf85363 *pcf85363 = priv;
@@ -350,13 +350,13 @@ static int pcf85x63_nvram_read(void *priv, unsigned int offset, void *val,
 	return ret;
 }
 
-static int pcf85x63_nvram_write(void *priv, unsigned int offset, void *val,
+static int pcf85x63_nvram_write(void *priv, unsigned int offset, const void *val,
 				size_t bytes)
 {
 	struct pcf85363 *pcf85363 = priv;
 	unsigned char tmp_val;
 
-	tmp_val = *((unsigned char *)val);
+	tmp_val = *((const unsigned char *)val);
 	return regmap_write(pcf85363->regmap, CTRL_RAMBYTE,
 				(unsigned int)tmp_val);
 }
@@ -391,14 +391,14 @@ static int pcf85363_probe(struct i2c_client *client)
 			.stride = 1,
 			.size = 1,
 			.reg_read = pcf85x63_nvram_read,
-			.reg_write = pcf85x63_nvram_write,
+			.reg_write_const = pcf85x63_nvram_write,
 		}, {
 			.name = "pcf85363-",
 			.word_size = 1,
 			.stride = 1,
 			.size = NVRAM_SIZE,
 			.reg_read = pcf85363_nvram_read,
-			.reg_write = pcf85363_nvram_write,
+			.reg_write_const = pcf85363_nvram_write,
 		},
 	};
 	int ret, i, err;

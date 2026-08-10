@@ -733,10 +733,10 @@ static int abx80x_nvmem_read(void *priv, unsigned int offset, void *val,
 	return abx80x_nvmem_xfer(priv, offset, val, bytes, false);
 }
 
-static int abx80x_nvmem_write(void *priv, unsigned int offset, void *val,
+static int abx80x_nvmem_write(void *priv, unsigned int offset, const void *val,
 			      size_t bytes)
 {
-	return abx80x_nvmem_xfer(priv, offset, val, bytes, true);
+	return abx80x_nvmem_xfer(priv, offset, (void *)val, bytes, true);
 }
 
 static int abx80x_setup_nvmem(struct abx80x_priv *priv)
@@ -744,7 +744,7 @@ static int abx80x_setup_nvmem(struct abx80x_priv *priv)
 	struct nvmem_config config = {
 		.type = NVMEM_TYPE_BATTERY_BACKED,
 		.reg_read = abx80x_nvmem_read,
-		.reg_write = abx80x_nvmem_write,
+		.reg_write_const = abx80x_nvmem_write,
 		.size = ABX8XX_RAM_SIZE,
 		.priv = priv,
 	};

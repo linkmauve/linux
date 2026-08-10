@@ -171,14 +171,14 @@ static int m48t86_nvram_read(void *priv, unsigned int off, void *buf,
 	return 0;
 }
 
-static int m48t86_nvram_write(void *priv, unsigned int off, void *buf,
+static int m48t86_nvram_write(void *priv, unsigned int off, const void *buf,
 			      size_t count)
 {
 	struct device *dev = priv;
 	unsigned int i;
 
 	for (i = 0; i < count; i++)
-		m48t86_writeb(dev, ((u8 *)buf)[i], M48T86_NVRAM(off + i));
+		m48t86_writeb(dev, ((const u8 *)buf)[i], M48T86_NVRAM(off + i));
 
 	return 0;
 }
@@ -226,7 +226,7 @@ static int m48t86_rtc_probe(struct platform_device *pdev)
 		.stride = 1,
 		.size = M48T86_NVRAM_LEN,
 		.reg_read = m48t86_nvram_read,
-		.reg_write = m48t86_nvram_write,
+		.reg_write_const = m48t86_nvram_write,
 		.priv = &pdev->dev,
 	};
 

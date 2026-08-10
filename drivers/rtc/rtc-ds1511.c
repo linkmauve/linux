@@ -257,14 +257,14 @@ static int ds1511_nvram_read(void *priv, unsigned int pos, void *buf,
 	return 0;
 }
 
-static int ds1511_nvram_write(void *priv, unsigned int pos, void *buf,
+static int ds1511_nvram_write(void *priv, unsigned int pos, const void *buf,
 			      size_t size)
 {
 	int i;
 
 	rtc_write(pos, DS1511_RAMADDR_LSB);
 	for (i = 0; i < size; i++)
-		rtc_write(*(char *)buf++, DS1511_RAMDATA);
+		rtc_write(*(const char *)buf++, DS1511_RAMDATA);
 
 	return 0;
 }
@@ -279,7 +279,7 @@ static int ds1511_rtc_probe(struct platform_device *pdev)
 		.stride = 1,
 		.size = DS1511_RAM_MAX,
 		.reg_read = ds1511_nvram_read,
-		.reg_write = ds1511_nvram_write,
+		.reg_write_const = ds1511_nvram_write,
 		.priv = &pdev->dev,
 	};
 

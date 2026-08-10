@@ -699,11 +699,11 @@ static int omap_rtc_scratch_read(void *priv, unsigned int offset, void *_val,
 	return 0;
 }
 
-static int omap_rtc_scratch_write(void *priv, unsigned int offset, void *_val,
+static int omap_rtc_scratch_write(void *priv, unsigned int offset, const void *_val,
 				  size_t bytes)
 {
 	struct omap_rtc	*rtc = priv;
-	u32 *val = _val;
+	const u32 *val = _val;
 	int i;
 
 	rtc->type->unlock(rtc);
@@ -721,7 +721,7 @@ static struct nvmem_config omap_rtc_nvmem_config = {
 	.stride = 4,
 	.size = OMAP_RTC_KICK0_REG - OMAP_RTC_SCRATCH0_REG,
 	.reg_read = omap_rtc_scratch_read,
-	.reg_write = omap_rtc_scratch_write,
+	.reg_write_const = omap_rtc_scratch_write,
 };
 
 static int omap_rtc_probe(struct platform_device *pdev)

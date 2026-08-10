@@ -688,10 +688,10 @@ static int sun6i_rtc_nvmem_read(void *priv, unsigned int offset, void *_val, siz
 	return 0;
 }
 
-static int sun6i_rtc_nvmem_write(void *priv, unsigned int offset, void *_val, size_t bytes)
+static int sun6i_rtc_nvmem_write(void *priv, unsigned int offset, const void *_val, size_t bytes)
 {
 	struct sun6i_rtc_dev *chip = priv;
-	u32 *val = _val;
+	const u32 *val = _val;
 	int i;
 
 	for (i = 0; i < bytes / 4; ++i)
@@ -703,7 +703,7 @@ static int sun6i_rtc_nvmem_write(void *priv, unsigned int offset, void *_val, si
 static struct nvmem_config sun6i_rtc_nvmem_cfg = {
 	.type		= NVMEM_TYPE_BATTERY_BACKED,
 	.reg_read	= sun6i_rtc_nvmem_read,
-	.reg_write	= sun6i_rtc_nvmem_write,
+	.reg_write_const = sun6i_rtc_nvmem_write,
 	.size		= SUN6I_GP_DATA_SIZE,
 	.word_size	= 4,
 	.stride		= 4,

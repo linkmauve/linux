@@ -659,11 +659,11 @@ static int cmos_nvram_read(void *priv, unsigned int off, void *val,
 	return 0;
 }
 
-static int cmos_nvram_write(void *priv, unsigned int off, void *val,
+static int cmos_nvram_write(void *priv, unsigned int off, const void *val,
 			    size_t count)
 {
 	struct cmos_rtc	*cmos = priv;
-	unsigned char	*buf = val;
+	const unsigned char	*buf = val;
 
 	/* NOTE:  on at least PCs and Ataris, the boot firmware uses a
 	 * checksum on part of the NVRAM data.  That's currently ignored
@@ -940,7 +940,7 @@ cmos_do_probe(struct device *dev, struct resource *ports, int rtc_irq)
 		.word_size = 1,
 		.stride = 1,
 		.reg_read = cmos_nvram_read,
-		.reg_write = cmos_nvram_write,
+		.reg_write_const = cmos_nvram_write,
 		.priv = &cmos_rtc,
 	};
 

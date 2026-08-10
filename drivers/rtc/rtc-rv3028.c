@@ -602,7 +602,7 @@ static int rv3028_ioctl(struct device *dev, unsigned int cmd, unsigned long arg)
 	}
 }
 
-static int rv3028_nvram_write(void *priv, unsigned int offset, void *val,
+static int rv3028_nvram_write(void *priv, unsigned int offset, const void *val,
 			      size_t bytes)
 {
 	return regmap_bulk_write(priv, RV3028_RAM1 + offset, val, bytes);
@@ -614,13 +614,13 @@ static int rv3028_nvram_read(void *priv, unsigned int offset, void *val,
 	return regmap_bulk_read(priv, RV3028_RAM1 + offset, val, bytes);
 }
 
-static int rv3028_eeprom_write(void *priv, unsigned int offset, void *val,
+static int rv3028_eeprom_write(void *priv, unsigned int offset, const void *val,
 			       size_t bytes)
 {
 	struct rv3028_data *rv3028 = priv;
 	u32 status, eerd;
 	int i, ret;
-	u8 *buf = val;
+	const u8 *buf = val;
 
 	ret = rv3028_enter_eerd(rv3028, &eerd);
 	if (ret)
@@ -931,7 +931,7 @@ static int rv3028_probe(struct i2c_client *client)
 		.size = 2,
 		.type = NVMEM_TYPE_BATTERY_BACKED,
 		.reg_read = rv3028_nvram_read,
-		.reg_write = rv3028_nvram_write,
+		.reg_write_const = rv3028_nvram_write,
 	};
 	struct nvmem_config eeprom_cfg = {
 		.name = "rv3028_eeprom",
@@ -940,7 +940,7 @@ static int rv3028_probe(struct i2c_client *client)
 		.size = 43,
 		.type = NVMEM_TYPE_EEPROM,
 		.reg_read = rv3028_eeprom_read,
-		.reg_write = rv3028_eeprom_write,
+		.reg_write_const = rv3028_eeprom_write,
 	};
 
 	rv3028 = devm_kzalloc(&client->dev, sizeof(struct rv3028_data),

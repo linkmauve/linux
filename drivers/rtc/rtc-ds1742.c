@@ -126,12 +126,12 @@ static int ds1742_nvram_read(void *priv, unsigned int pos, void *val,
 	return 0;
 }
 
-static int ds1742_nvram_write(void *priv, unsigned int pos, void *val,
+static int ds1742_nvram_write(void *priv, unsigned int pos, const void *val,
 			      size_t bytes)
 {
 	struct rtc_plat_data *pdata = priv;
 	void __iomem *ioaddr = pdata->ioaddr_nvram;
-	u8 *buf = val;
+	const u8 *buf = val;
 
 	for (; bytes; bytes--)
 		writeb(*buf++, ioaddr + pos++);
@@ -149,7 +149,7 @@ static int ds1742_rtc_probe(struct platform_device *pdev)
 	struct nvmem_config nvmem_cfg = {
 		.name = "ds1742_nvram",
 		.reg_read = ds1742_nvram_read,
-		.reg_write = ds1742_nvram_write,
+		.reg_write_const = ds1742_nvram_write,
 	};
 
 

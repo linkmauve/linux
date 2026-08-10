@@ -460,7 +460,7 @@ static int pcf2127_nvmem_read(void *priv, unsigned int offset,
 }
 
 static int pcf2127_nvmem_write(void *priv, unsigned int offset,
-			       void *val, size_t bytes)
+			       const void *val, size_t bytes)
 {
 	struct pcf2127 *pcf2127 = priv;
 	int ret;
@@ -1271,7 +1271,7 @@ static int pcf2127_probe(struct device *dev, struct regmap *regmap,
 		struct nvmem_config nvmem_cfg = {
 			.priv = pcf2127,
 			.reg_read = pcf2127_nvmem_read,
-			.reg_write = pcf2127_nvmem_write,
+			.reg_write_const = pcf2127_nvmem_write,
 			.size = 512,
 		};
 

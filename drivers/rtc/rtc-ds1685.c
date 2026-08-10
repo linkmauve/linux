@@ -904,13 +904,13 @@ static int ds1685_nvram_read(void *priv, unsigned int pos, void *val,
 	return 0;
 }
 
-static int ds1685_nvram_write(void *priv, unsigned int pos, void *val,
+static int ds1685_nvram_write(void *priv, unsigned int pos, const void *val,
 			      size_t size)
 {
 	struct ds1685_priv *rtc = priv;
 	struct mutex *rtc_mutex = &rtc->dev->ops_lock;
 	ssize_t count;
-	u8 *buf = val;
+	const u8 *buf = val;
 	int err;
 
 	err = mutex_lock_interruptible(rtc_mutex);
@@ -1077,7 +1077,7 @@ ds1685_rtc_probe(struct platform_device *pdev)
 		.name = "ds1685_nvram",
 		.size = NVRAM_TOTAL_SZ,
 		.reg_read = ds1685_nvram_read,
-		.reg_write = ds1685_nvram_write,
+		.reg_write_const = ds1685_nvram_write,
 	};
 
 	/* Get the platform data. */

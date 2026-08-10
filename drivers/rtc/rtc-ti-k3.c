@@ -491,7 +491,7 @@ static int ti_k3_rtc_scratch_read(void *priv_data, unsigned int offset,
 }
 
 static int ti_k3_rtc_scratch_write(void *priv_data, unsigned int offset,
-				   void *val, size_t bytes)
+				   const void *val, size_t bytes)
 {
 	struct ti_k3_rtc *priv = (struct ti_k3_rtc *)priv_data;
 	int ret;
@@ -509,7 +509,7 @@ static struct nvmem_config ti_k3_rtc_nvmem_config = {
 	.stride = 4,
 	.size = REG_K3RTC_SCRATCH7 - REG_K3RTC_SCRATCH0 + 4,
 	.reg_read = ti_k3_rtc_scratch_read,
-	.reg_write = ti_k3_rtc_scratch_write,
+	.reg_write_const = ti_k3_rtc_scratch_write,
 };
 
 static int k3rtc_get_32kclk(struct device *dev, struct ti_k3_rtc *priv)

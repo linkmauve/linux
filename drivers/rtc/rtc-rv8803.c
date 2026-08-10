@@ -536,10 +536,10 @@ static int rv8803_ioctl(struct device *dev, unsigned int cmd, unsigned long arg)
 	}
 }
 
-static int rv8803_nvram_write(void *priv, unsigned int offset, void *val,
+static int rv8803_nvram_write(void *priv, unsigned int offset, const void *val,
 			      size_t bytes)
 {
-	return rv8803_write_reg(priv, RV8803_RAM, *(u8 *)val);
+	return rv8803_write_reg(priv, RV8803_RAM, *(const u8 *)val);
 }
 
 static int rv8803_nvram_read(void *priv, unsigned int offset,
@@ -650,7 +650,7 @@ static int rv8803_probe(struct i2c_client *client)
 		.stride = 1,
 		.size = 1,
 		.reg_read = rv8803_nvram_read,
-		.reg_write = rv8803_nvram_write,
+		.reg_write_const = rv8803_nvram_write,
 		.priv = client,
 	};
 

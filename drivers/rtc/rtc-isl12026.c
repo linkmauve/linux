@@ -319,11 +319,11 @@ static int isl12026_nvm_read(void *p, unsigned int offset,
 }
 
 static int isl12026_nvm_write(void *p, unsigned int offset,
-			      void *val, size_t bytes)
+			      const void *val, size_t bytes)
 {
 	struct isl12026 *priv = p;
 	int ret;
-	u8 *v = val;
+	const u8 *v = val;
 	size_t chunk_size, num_written;
 	u8 payload[ISL12026_PAGESIZE + 2]; /* page + 2 address bytes */
 	struct i2c_msg msgs[] = {
@@ -439,7 +439,7 @@ static int isl12026_probe(struct i2c_client *client)
 		.word_size = 1,
 		.size = 512,
 		.reg_read = isl12026_nvm_read,
-		.reg_write = isl12026_nvm_write,
+		.reg_write_const = isl12026_nvm_write,
 	};
 
 	if (!i2c_check_functionality(client->adapter, I2C_FUNC_I2C))

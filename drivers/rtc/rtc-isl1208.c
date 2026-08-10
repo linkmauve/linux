@@ -799,7 +799,7 @@ static int isl1208_nvmem_read(void *priv, unsigned int off, void *buf,
 				    count);
 }
 
-static int isl1208_nvmem_write(void *priv, unsigned int off, void *buf,
+static int isl1208_nvmem_write(void *priv, unsigned int off, const void *buf,
 			       size_t count)
 {
 	struct isl1208_state *isl1208 = priv;
@@ -819,7 +819,7 @@ static const struct nvmem_config isl1208_nvmem_config = {
 	.stride = 1,
 	/* .size from chip specific config */
 	.reg_read = isl1208_nvmem_read,
-	.reg_write = isl1208_nvmem_write,
+	.reg_write_const = isl1208_nvmem_write,
 };
 
 static void isl1208_disable_irq_wake_action(void *data)

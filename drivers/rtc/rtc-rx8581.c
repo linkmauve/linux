@@ -188,7 +188,7 @@ static int rx8571_nvram_read(void *priv, unsigned int offset, void *val,
 	return regmap_bulk_read(regmap, RX8571_USER_RAM + offset, val, bytes);
 }
 
-static int rx8571_nvram_write(void *priv, unsigned int offset, void *val,
+static int rx8571_nvram_write(void *priv, unsigned int offset, const void *val,
 			      size_t bytes)
 {
 	struct regmap *regmap = priv;
@@ -209,13 +209,13 @@ static int rx85x1_nvram_read(void *priv, unsigned int offset, void *val,
 	return ret;
 }
 
-static int rx85x1_nvram_write(void *priv, unsigned int offset, void *val,
+static int rx85x1_nvram_write(void *priv, unsigned int offset, const void *val,
 			      size_t bytes)
 {
 	struct regmap *regmap = priv;
 	unsigned char tmp_val;
 
-	tmp_val = *((unsigned char *)val);
+	tmp_val = *((const unsigned char *)val);
 	return regmap_write(regmap, RX8581_REG_RAM, (unsigned int)tmp_val);
 }
 
@@ -250,14 +250,14 @@ static int rx8581_probe(struct i2c_client *client)
 			.stride = 1,
 			.size = 1,
 			.reg_read = rx85x1_nvram_read,
-			.reg_write = rx85x1_nvram_write,
+			.reg_write_const = rx85x1_nvram_write,
 		}, {
 			.name = "rx8571-",
 			.word_size = 1,
 			.stride = 1,
 			.size = RX8571_NVRAM_SIZE,
 			.reg_read = rx8571_nvram_read,
-			.reg_write = rx8571_nvram_write,
+			.reg_write_const = rx8571_nvram_write,
 		},
 	};
 	int ret, i;

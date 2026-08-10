@@ -188,11 +188,11 @@ static int rp5c01_nvram_read(void *_priv, unsigned int pos, void *val,
 	return 0;
 }
 
-static int rp5c01_nvram_write(void *_priv, unsigned int pos, void *val,
+static int rp5c01_nvram_write(void *_priv, unsigned int pos, const void *val,
 			      size_t bytes)
 {
 	struct rp5c01_priv *priv = _priv;
-	u8 *buf = val;
+	const u8 *buf = val;
 
 	spin_lock_irq(&priv->lock);
 
@@ -227,7 +227,7 @@ static int __init rp5c01_rtc_probe(struct platform_device *dev)
 		.stride = 1,
 		.size = RP5C01_MODE,
 		.reg_read = rp5c01_nvram_read,
-		.reg_write = rp5c01_nvram_write,
+		.reg_write_const = rp5c01_nvram_write,
 	};
 
 	res = platform_get_resource(dev, IORESOURCE_MEM, 0);

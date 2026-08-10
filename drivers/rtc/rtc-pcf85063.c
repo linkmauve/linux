@@ -340,9 +340,9 @@ static int pcf85063_nvmem_read(void *priv, unsigned int offset,
 }
 
 static int pcf85063_nvmem_write(void *priv, unsigned int offset,
-				void *val, size_t bytes)
+				const void *val, size_t bytes)
 {
-	return regmap_write(priv, PCF85063_REG_RAM, *(u8 *)val);
+	return regmap_write(priv, PCF85063_REG_RAM, *(const u8 *)val);
 }
 
 static int pcf85063_load_capacitance(struct pcf85063 *pcf85063,
@@ -542,7 +542,7 @@ static int pcf85063_probe(struct device *dev, struct regmap *regmap, int irq,
 	struct nvmem_config nvmem_cfg = {
 		.name = "pcf85063_nvram",
 		.reg_read = pcf85063_nvmem_read,
-		.reg_write = pcf85063_nvmem_write,
+		.reg_write_const = pcf85063_nvmem_write,
 		.type = NVMEM_TYPE_BATTERY_BACKED,
 		.size = 1,
 	};

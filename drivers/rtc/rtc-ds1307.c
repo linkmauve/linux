@@ -1285,7 +1285,7 @@ static int ds1307_nvram_read(void *priv, unsigned int offset, void *val,
 				val, bytes);
 }
 
-static int ds1307_nvram_write(void *priv, unsigned int offset, void *val,
+static int ds1307_nvram_write(void *priv, unsigned int offset, const void *val,
 			      size_t bytes)
 {
 	struct ds1307 *ds1307 = priv;
@@ -2146,7 +2146,7 @@ static int ds1307_probe(struct i2c_client *client)
 			.stride = 1,
 			.size = chip->nvram_size,
 			.reg_read = ds1307_nvram_read,
-			.reg_write = ds1307_nvram_write,
+			.reg_write_const = ds1307_nvram_write,
 			.priv = ds1307,
 		};
 

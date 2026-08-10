@@ -234,13 +234,13 @@ static int ds1553_nvram_read(void *priv, unsigned int pos, void *val,
 	return 0;
 }
 
-static int ds1553_nvram_write(void *priv, unsigned int pos, void *val,
+static int ds1553_nvram_write(void *priv, unsigned int pos, const void *val,
 			      size_t bytes)
 {
 	struct platform_device *pdev = priv;
 	struct rtc_plat_data *pdata = platform_get_drvdata(pdev);
 	void __iomem *ioaddr = pdata->ioaddr;
-	u8 *buf = val;
+	const u8 *buf = val;
 
 	for (; bytes; bytes--)
 		writeb(*buf++, ioaddr + pos++);
@@ -259,7 +259,7 @@ static int ds1553_rtc_probe(struct platform_device *pdev)
 		.stride = 1,
 		.size = RTC_OFFSET,
 		.reg_read = ds1553_nvram_read,
-		.reg_write = ds1553_nvram_write,
+		.reg_write_const = ds1553_nvram_write,
 		.priv = pdev,
 	};
 

@@ -576,7 +576,7 @@ static int max31335_nvmem_reg_read(void *priv, unsigned int offset,
 }
 
 static int max31335_nvmem_reg_write(void *priv, unsigned int offset,
-				    void *val, size_t bytes)
+				    const void *val, size_t bytes)
 {
 	struct max31335_data *max31335 = priv;
 	unsigned int reg = max31335->chip->ram_reg + offset;
@@ -586,7 +586,7 @@ static int max31335_nvmem_reg_write(void *priv, unsigned int offset,
 
 static struct nvmem_config max31335_nvmem_cfg = {
 	.reg_read = max31335_nvmem_reg_read,
-	.reg_write = max31335_nvmem_reg_write,
+	.reg_write_const = max31335_nvmem_reg_write,
 	.word_size = 8,
 	.size = MAX31335_RAM_SIZE,
 };

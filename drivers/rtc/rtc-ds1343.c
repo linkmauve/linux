@@ -123,7 +123,7 @@ static ssize_t ds1343_store_glitchfilter(struct device *dev,
 static DEVICE_ATTR(glitch_filter, S_IRUGO | S_IWUSR, ds1343_show_glitchfilter,
 			ds1343_store_glitchfilter);
 
-static int ds1343_nvram_write(void *priv, unsigned int off, void *val,
+static int ds1343_nvram_write(void *priv, unsigned int off, const void *val,
 			      size_t bytes)
 {
 	struct ds1343_priv *ds1343 = priv;
@@ -354,7 +354,7 @@ static int ds1343_probe(struct spi_device *spi)
 		.stride = 1,
 		.size = DS1343_NVRAM_LEN,
 		.reg_read = ds1343_nvram_read,
-		.reg_write = ds1343_nvram_write,
+		.reg_write_const = ds1343_nvram_write,
 	};
 
 	priv = devm_kzalloc(&spi->dev, sizeof(struct ds1343_priv), GFP_KERNEL);

@@ -487,7 +487,7 @@ static irqreturn_t ds1305_irq(int irq, void *p)
  */
 
 static void msg_init(struct spi_message *m, struct spi_transfer *x,
-		u8 *addr, size_t count, char *tx, char *rx)
+		u8 *addr, size_t count, const char *tx, char *rx)
 {
 	spi_message_init(m);
 	memset(x, 0, 2 * sizeof(*x));
@@ -519,7 +519,7 @@ static int ds1305_nvram_read(void *priv, unsigned int off, void *buf,
 	return spi_sync(spi, &m);
 }
 
-static int ds1305_nvram_write(void *priv, unsigned int off, void *buf,
+static int ds1305_nvram_write(void *priv, unsigned int off, const void *buf,
 			      size_t count)
 {
 	struct ds1305		*ds1305 = priv;
@@ -553,7 +553,7 @@ static int ds1305_probe(struct spi_device *spi)
 		.stride = 1,
 		.size = DS1305_NVRAM_LEN,
 		.reg_read = ds1305_nvram_read,
-		.reg_write = ds1305_nvram_write,
+		.reg_write_const = ds1305_nvram_write,
 	};
 
 	/* Sanity check board setup data.  This may be hooked up

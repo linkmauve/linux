@@ -316,7 +316,7 @@ static int m48t59_nvram_read(void *priv, unsigned int offset, void *val,
 	return 0;
 }
 
-static int m48t59_nvram_write(void *priv, unsigned int offset, void *val,
+static int m48t59_nvram_write(void *priv, unsigned int offset, const void *val,
 			      size_t size)
 {
 	struct platform_device *pdev = priv;
@@ -325,7 +325,7 @@ static int m48t59_nvram_write(void *priv, unsigned int offset, void *val,
 	struct m48t59_private *m48t59 = platform_get_drvdata(pdev);
 	ssize_t cnt = 0;
 	unsigned long flags;
-	u8 *buf = val;
+	const u8 *buf = val;
 
 	spin_lock_irqsave(&m48t59->lock, flags);
 
@@ -348,7 +348,7 @@ static int m48t59_rtc_probe(struct platform_device *pdev)
 		.word_size = 1,
 		.stride = 1,
 		.reg_read = m48t59_nvram_read,
-		.reg_write = m48t59_nvram_write,
+		.reg_write_const = m48t59_nvram_write,
 		.priv = pdev,
 	};
 

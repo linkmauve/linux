@@ -426,12 +426,12 @@ static int s35390a_nvmem_read(void *priv, unsigned int offset, void *val,
 	return s35390a_get_reg(s35390a, S35390A_CMD_FREE_REG, val, bytes);
 }
 
-static int s35390a_nvmem_write(void *priv, unsigned int offset, void *val,
+static int s35390a_nvmem_write(void *priv, unsigned int offset, const void *val,
 			       size_t bytes)
 {
 	struct s35390a *s35390a = priv;
 
-	return s35390a_set_reg(s35390a, S35390A_CMD_FREE_REG, val, bytes);
+	return s35390a_set_reg(s35390a, S35390A_CMD_FREE_REG, (u8 *)val, bytes);
 }
 
 static int s35390a_probe(struct i2c_client *client)
@@ -449,7 +449,7 @@ static int s35390a_probe(struct i2c_client *client)
 		.stride = 1,
 		.size = 1,
 		.reg_read = s35390a_nvmem_read,
-		.reg_write = s35390a_nvmem_write,
+		.reg_write_const = s35390a_nvmem_write,
 	};
 
 	if (!i2c_check_functionality(client->adapter, I2C_FUNC_I2C))

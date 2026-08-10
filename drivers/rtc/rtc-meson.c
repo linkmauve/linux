@@ -266,7 +266,7 @@ static int meson_rtc_regmem_read(void *context, unsigned int offset,
 }
 
 static int meson_rtc_regmem_write(void *context, unsigned int offset,
-				  void *buf, size_t bytes)
+				  const void *buf, size_t bytes)
 {
 	struct meson_rtc *rtc = context;
 	unsigned int write_offset, write_size;
@@ -286,7 +286,7 @@ static int meson_rtc_probe(struct platform_device *pdev)
 		.stride = 4,
 		.size = 4 * 4,
 		.reg_read = meson_rtc_regmem_read,
-		.reg_write = meson_rtc_regmem_write,
+		.reg_write_const = meson_rtc_regmem_write,
 	};
 	struct device *dev = &pdev->dev;
 	struct meson_rtc *rtc;
