@@ -209,7 +209,7 @@ static int ds1682_nvmem_read(void *priv, unsigned int offset, void *val,
 	return ret < 0 ? ret : 0;
 }
 
-static int ds1682_nvmem_write(void *priv, unsigned int offset, void *val,
+static int ds1682_nvmem_write(void *priv, unsigned int offset, const void *val,
 			      size_t bytes)
 {
 	struct i2c_client *client = priv;
@@ -230,7 +230,7 @@ static int ds1682_probe(struct i2c_client *client)
 		.owner = THIS_MODULE,
 		.type = NVMEM_TYPE_EEPROM,
 		.reg_read = ds1682_nvmem_read,
-		.reg_write = ds1682_nvmem_write,
+		.reg_write_const = ds1682_nvmem_write,
 		.size = DS1682_EEPROM_SIZE,
 		.priv = client,
 	};

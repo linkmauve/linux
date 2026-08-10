@@ -159,11 +159,11 @@ error:
 }
 
 static int pci1xxxx_eeprom_write(void *priv_t, unsigned int off,
-				 void *value_t, size_t count)
+				 const void *value_t, size_t count)
 {
 	struct pci1xxxx_otp_eeprom_device *priv = priv_t;
 	void __iomem *rb = priv->reg_base;
-	char *value = value_t;
+	const char *value = value_t;
 	u32 regval;
 	u32 byte;
 	int ret;
@@ -262,11 +262,11 @@ error:
 }
 
 static int pci1xxxx_otp_write(void *priv_t, unsigned int off,
-			      void *value_t, size_t count)
+			      const void *value_t, size_t count)
 {
 	struct pci1xxxx_otp_eeprom_device *priv = priv_t;
 	void __iomem *rb = priv->reg_base;
-	char *value = value_t;
+	const char *value = value_t;
 	u32 regval;
 	u32 byte;
 	int ret;
@@ -368,7 +368,7 @@ static int pci1xxxx_otp_eeprom_probe(struct auxiliary_device *aux_dev,
 		priv->nvmem_config_eeprom.dev = &aux_dev->dev;
 		priv->nvmem_config_eeprom.owner = THIS_MODULE;
 		priv->nvmem_config_eeprom.reg_read = pci1xxxx_eeprom_read;
-		priv->nvmem_config_eeprom.reg_write = pci1xxxx_eeprom_write;
+		priv->nvmem_config_eeprom.reg_write_const = pci1xxxx_eeprom_write;
 		priv->nvmem_config_eeprom.priv = priv;
 		priv->nvmem_config_eeprom.stride = 1;
 		priv->nvmem_config_eeprom.word_size = 1;
@@ -388,7 +388,7 @@ static int pci1xxxx_otp_eeprom_probe(struct auxiliary_device *aux_dev,
 	priv->nvmem_config_otp.dev = &aux_dev->dev;
 	priv->nvmem_config_otp.owner = THIS_MODULE;
 	priv->nvmem_config_otp.reg_read = pci1xxxx_otp_read;
-	priv->nvmem_config_otp.reg_write = pci1xxxx_otp_write;
+	priv->nvmem_config_otp.reg_write_const = pci1xxxx_otp_write;
 	priv->nvmem_config_otp.priv = priv;
 	priv->nvmem_config_otp.stride = 1;
 	priv->nvmem_config_otp.word_size = 1;
