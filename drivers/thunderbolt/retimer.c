@@ -60,7 +60,7 @@ out:
 	return ret;
 }
 
-static int nvm_write(void *priv, unsigned int offset, void *val, size_t bytes)
+static int nvm_write(void *priv, unsigned int offset, const void *val, size_t bytes)
 {
 	struct tb_nvm *nvm = priv;
 	struct tb_retimer *rt = tb_to_retimer(nvm->dev);
