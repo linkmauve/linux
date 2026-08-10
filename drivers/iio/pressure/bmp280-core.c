@@ -2270,11 +2270,11 @@ static int bmp580_nvmem_read(void *priv, unsigned int offset, void *val,
 	return ret;
 }
 
-static int bmp580_nvmem_write_impl(void *priv, unsigned int offset, void *val,
+static int bmp580_nvmem_write_impl(void *priv, unsigned int offset, const void *val,
 				   size_t bytes)
 {
 	struct bmp280_data *data = priv;
-	u16 *buf = val;
+	const u16 *buf = val;
 	int ret, addr;
 
 	guard(mutex)(&data->lock);
@@ -2331,7 +2331,7 @@ exit:
 	return ret;
 }
 
-static int bmp580_nvmem_write(void *priv, unsigned int offset, void *val,
+static int bmp580_nvmem_write(void *priv, unsigned int offset, const void *val,
 			      size_t bytes)
 {
 	struct bmp280_data *data = priv;
@@ -2357,7 +2357,7 @@ static int bmp580_preinit(struct bmp280_data *data)
 		.stride = sizeof(u16),
 		.size = 3 * sizeof(u16),
 		.reg_read = bmp580_nvmem_read,
-		.reg_write = bmp580_nvmem_write,
+		.reg_write_const = bmp580_nvmem_write,
 	};
 	unsigned int reg;
 	int ret;
