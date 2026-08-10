@@ -71,14 +71,14 @@ static int __nvmem_reg_write(struct nvmem_device *nvmem, unsigned int offset,
 	struct nvmem_operations *ops = nvmem->ops;
 	int ret, wr_ok;
 
-	if (!ops->reg_write_const)
+	if (!ops->reg_write)
 		return -EOPNOTSUPP;
 
 	ret = gpiod_set_value_cansleep(nvmem->wp_gpio, 0);
 	if (ret)
 		return ret;
 
-	wr_ok = ops->reg_write_const(nvmem->priv, offset, val, bytes);
+	wr_ok = ops->reg_write(nvmem->priv, offset, val, bytes);
 
 	ret = gpiod_set_value_cansleep(nvmem->wp_gpio, 1);
 	if (ret)
@@ -299,7 +299,7 @@ static umode_t nvmem_bin_attr_get_umode(struct nvmem_device *nvmem)
 	if (!nvmem->read_only)
 		mode |= 0200;
 
-	if (!ops->reg_write_const)
+	if (!ops->reg_write)
 		mode &= ~0200;
 
 	if (!ops->reg_read)
@@ -336,13 +336,13 @@ static umode_t nvmem_attr_is_visible(struct kobject *kobj,
 	struct nvmem_operations *ops = nvmem->ops;
 
 	/*
-	 * If the device has no .reg_write_const operation, do
+	 * If the device has no .reg_write operation, do
 	 * not allow configuration as read-write.
 	 * If the device is set as read-only by configuration, it
 	 * can be forced into read-write mode using the 'force_ro'
 	 * attribute.
 	 */
-	if (attr == &dev_attr_force_ro.attr && !ops->reg_write_const)
+	if (attr == &dev_attr_force_ro.attr && !ops->reg_write)
 		return 0;	/* Attribute not visible */
 
 	return attr->mode;
@@ -893,7 +893,7 @@ struct nvmem_device *nvmem_register(const struct nvmem_config *config)
 	if (!config->dev)
 		return ERR_PTR(-EINVAL);
 
-	if (!config->reg_read && !config->reg_write_const)
+	if (!config->reg_read && !config->reg_write)
 		return ERR_PTR(-EINVAL);
 
 	nvmem = kzalloc_obj(*nvmem);
@@ -936,7 +936,7 @@ struct nvmem_device *nvmem_register(const struct nvmem_config *config)
 	nvmem->fixup_dt_cell_info = config->fixup_dt_cell_info;
 
 	ops->reg_read = config->reg_read;
-	ops->reg_write_const = config->reg_write_const;
+	ops->reg_write = config->reg_write;
 
 	nvmem->owner = config->owner;
 	if (!nvmem->owner && config->dev->driver)
@@ -972,7 +972,7 @@ struct nvmem_device *nvmem_register(const struct nvmem_config *config)
 		goto err_put_device;
 
 	nvmem->read_only = device_property_present(config->dev, "read-only") ||
-			   config->read_only || !ops->reg_write_const;
+			   config->read_only || !ops->reg_write;
 
 #ifdef CONFIG_NVMEM_SYSFS
 	nvmem->dev.groups = nvmem_dev_groups;

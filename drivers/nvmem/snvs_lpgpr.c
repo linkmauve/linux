@@ -127,7 +127,7 @@ static int snvs_lpgpr_probe(struct platform_device *pdev)
 	cfg->size = dcfg->size;
 	cfg->owner = THIS_MODULE;
 	cfg->reg_read  = snvs_lpgpr_read;
-	cfg->reg_write_const = snvs_lpgpr_write;
+	cfg->reg_write = snvs_lpgpr_write;
 
 	nvmem = devm_nvmem_register(dev, cfg);
 

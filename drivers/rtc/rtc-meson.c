@@ -286,7 +286,7 @@ static int meson_rtc_probe(struct platform_device *pdev)
 		.stride = 4,
 		.size = 4 * 4,
 		.reg_read = meson_rtc_regmem_read,
-		.reg_write_const = meson_rtc_regmem_write,
+		.reg_write = meson_rtc_regmem_write,
 	};
 	struct device *dev = &pdev->dev;
 	struct meson_rtc *rtc;

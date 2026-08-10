@@ -391,14 +391,14 @@ static int pcf85363_probe(struct i2c_client *client)
 			.stride = 1,
 			.size = 1,
 			.reg_read = pcf85x63_nvram_read,
-			.reg_write_const = pcf85x63_nvram_write,
+			.reg_write = pcf85x63_nvram_write,
 		}, {
 			.name = "pcf85363-",
 			.word_size = 1,
 			.stride = 1,
 			.size = NVRAM_SIZE,
 			.reg_read = pcf85363_nvram_read,
-			.reg_write_const = pcf85363_nvram_write,
+			.reg_write = pcf85363_nvram_write,
 		},
 	};
 	int ret, i, err;

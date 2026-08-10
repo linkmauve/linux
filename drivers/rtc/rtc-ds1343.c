@@ -354,7 +354,7 @@ static int ds1343_probe(struct spi_device *spi)
 		.stride = 1,
 		.size = DS1343_NVRAM_LEN,
 		.reg_read = ds1343_nvram_read,
-		.reg_write_const = ds1343_nvram_write,
+		.reg_write = ds1343_nvram_write,
 	};
 
 	priv = devm_kzalloc(&spi->dev, sizeof(struct ds1343_priv), GFP_KERNEL);

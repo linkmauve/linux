@@ -410,7 +410,7 @@ static int sprd_efuse_probe(struct platform_device *pdev)
 	econfig.size = efuse->data->blk_nums * SPRD_EFUSE_BLOCK_WIDTH;
 	econfig.add_legacy_fixed_of_cells = true;
 	econfig.reg_read = sprd_efuse_read;
-	econfig.reg_write_const = sprd_efuse_write;
+	econfig.reg_write = sprd_efuse_write;
 	econfig.priv = efuse;
 	econfig.dev = &pdev->dev;
 	nvmem = devm_nvmem_register(&pdev->dev, &econfig);

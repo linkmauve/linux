@@ -250,14 +250,14 @@ static int rx8581_probe(struct i2c_client *client)
 			.stride = 1,
 			.size = 1,
 			.reg_read = rx85x1_nvram_read,
-			.reg_write_const = rx85x1_nvram_write,
+			.reg_write = rx85x1_nvram_write,
 		}, {
 			.name = "rx8571-",
 			.word_size = 1,
 			.stride = 1,
 			.size = RX8571_NVRAM_SIZE,
 			.reg_read = rx8571_nvram_read,
-			.reg_write_const = rx8571_nvram_write,
+			.reg_write = rx8571_nvram_write,
 		},
 	};
 	int ret, i;

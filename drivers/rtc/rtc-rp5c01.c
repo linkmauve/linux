@@ -227,7 +227,7 @@ static int __init rp5c01_rtc_probe(struct platform_device *dev)
 		.stride = 1,
 		.size = RP5C01_MODE,
 		.reg_read = rp5c01_nvram_read,
-		.reg_write_const = rp5c01_nvram_write,
+		.reg_write = rp5c01_nvram_write,
 	};
 
 	res = platform_get_resource(dev, IORESOURCE_MEM, 0);

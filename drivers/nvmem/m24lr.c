@@ -548,7 +548,7 @@ static int m24lr_probe(struct i2c_client *client)
 	nvmem_conf.owner = THIS_MODULE;
 	nvmem_conf.type = NVMEM_TYPE_EEPROM;
 	nvmem_conf.reg_read = m24lr_nvmem_read;
-	nvmem_conf.reg_write_const = m24lr_nvmem_write;
+	nvmem_conf.reg_write = m24lr_nvmem_write;
 	nvmem_conf.size = chip->eeprom_size;
 	nvmem_conf.word_size = 1;
 	nvmem_conf.stride = 1;

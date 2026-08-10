@@ -449,7 +449,7 @@ static int s35390a_probe(struct i2c_client *client)
 		.stride = 1,
 		.size = 1,
 		.reg_read = s35390a_nvmem_read,
-		.reg_write_const = s35390a_nvmem_write,
+		.reg_write = s35390a_nvmem_write,
 	};
 
 	if (!i2c_check_functionality(client->adapter, I2C_FUNC_I2C))

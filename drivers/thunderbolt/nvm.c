@@ -500,7 +500,7 @@ int tb_nvm_write_buf(struct tb_nvm *nvm, unsigned int offset, const void *val,
  *
  * Return: %0 on success, negative errno otherwise.
  */
-int tb_nvm_add_non_active(struct tb_nvm *nvm, nvmem_reg_write_const_t reg_write)
+int tb_nvm_add_non_active(struct tb_nvm *nvm, nvmem_reg_write_t reg_write)
 {
 	struct nvmem_config config;
 	struct nvmem_device *nvmem;
@@ -508,7 +508,7 @@ int tb_nvm_add_non_active(struct tb_nvm *nvm, nvmem_reg_write_const_t reg_write)
 	memset(&config, 0, sizeof(config));
 
 	config.name = "nvm_non_active";
-	config.reg_write_const = reg_write;
+	config.reg_write = reg_write;
 	config.root_only = true;
 	config.id = nvm->id;
 	config.stride = 4;

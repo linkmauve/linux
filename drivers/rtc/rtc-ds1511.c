@@ -279,7 +279,7 @@ static int ds1511_rtc_probe(struct platform_device *pdev)
 		.stride = 1,
 		.size = DS1511_RAM_MAX,
 		.reg_read = ds1511_nvram_read,
-		.reg_write_const = ds1511_nvram_write,
+		.reg_write = ds1511_nvram_write,
 		.priv = &pdev->dev,
 	};
 

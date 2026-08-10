@@ -1077,7 +1077,7 @@ ds1685_rtc_probe(struct platform_device *pdev)
 		.name = "ds1685_nvram",
 		.size = NVRAM_TOTAL_SZ,
 		.reg_read = ds1685_nvram_read,
-		.reg_write_const = ds1685_nvram_write,
+		.reg_write = ds1685_nvram_write,
 	};
 
 	/* Get the platform data. */

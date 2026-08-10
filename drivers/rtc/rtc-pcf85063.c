@@ -542,7 +542,7 @@ static int pcf85063_probe(struct device *dev, struct regmap *regmap, int irq,
 	struct nvmem_config nvmem_cfg = {
 		.name = "pcf85063_nvram",
 		.reg_read = pcf85063_nvmem_read,
-		.reg_write_const = pcf85063_nvmem_write,
+		.reg_write = pcf85063_nvmem_write,
 		.type = NVMEM_TYPE_BATTERY_BACKED,
 		.size = 1,
 	};

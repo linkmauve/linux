@@ -819,7 +819,7 @@ static const struct nvmem_config isl1208_nvmem_config = {
 	.stride = 1,
 	/* .size from chip specific config */
 	.reg_read = isl1208_nvmem_read,
-	.reg_write_const = isl1208_nvmem_write,
+	.reg_write = isl1208_nvmem_write,
 };
 
 static void isl1208_disable_irq_wake_action(void *data)

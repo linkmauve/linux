@@ -650,7 +650,7 @@ static int rv8803_probe(struct i2c_client *client)
 		.stride = 1,
 		.size = 1,
 		.reg_read = rv8803_nvram_read,
-		.reg_write_const = rv8803_nvram_write,
+		.reg_write = rv8803_nvram_write,
 		.priv = client,
 	};
 

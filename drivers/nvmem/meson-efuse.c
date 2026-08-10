@@ -83,7 +83,7 @@ static int meson_efuse_probe(struct platform_device *pdev)
 	econfig->stride = 1;
 	econfig->word_size = 1;
 	econfig->reg_read = meson_efuse_read;
-	econfig->reg_write_const = meson_efuse_write;
+	econfig->reg_write = meson_efuse_write;
 	econfig->size = size;
 	econfig->priv = fw;
 

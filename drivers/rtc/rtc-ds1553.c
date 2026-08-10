@@ -259,7 +259,7 @@ static int ds1553_rtc_probe(struct platform_device *pdev)
 		.stride = 1,
 		.size = RTC_OFFSET,
 		.reg_read = ds1553_nvram_read,
-		.reg_write_const = ds1553_nvram_write,
+		.reg_write = ds1553_nvram_write,
 		.priv = pdev,
 	};
 

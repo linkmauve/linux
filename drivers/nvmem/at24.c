@@ -743,7 +743,7 @@ static int at24_probe(struct i2c_client *client)
 	nvmem_config.compat = true;
 	nvmem_config.base_dev = dev;
 	nvmem_config.reg_read = at24_read;
-	nvmem_config.reg_write_const = at24_write;
+	nvmem_config.reg_write = at24_write;
 	nvmem_config.priv = at24;
 	nvmem_config.stride = 1;
 	nvmem_config.word_size = 1;

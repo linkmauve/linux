@@ -2357,7 +2357,7 @@ static int bmp580_preinit(struct bmp280_data *data)
 		.stride = sizeof(u16),
 		.size = 3 * sizeof(u16),
 		.reg_read = bmp580_nvmem_read,
-		.reg_write_const = bmp580_nvmem_write,
+		.reg_write = bmp580_nvmem_write,
 	};
 	unsigned int reg;
 	int ret;

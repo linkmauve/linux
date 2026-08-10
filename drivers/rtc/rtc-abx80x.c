@@ -744,7 +744,7 @@ static int abx80x_setup_nvmem(struct abx80x_priv *priv)
 	struct nvmem_config config = {
 		.type = NVMEM_TYPE_BATTERY_BACKED,
 		.reg_read = abx80x_nvmem_read,
-		.reg_write_const = abx80x_nvmem_write,
+		.reg_write = abx80x_nvmem_write,
 		.size = ABX8XX_RAM_SIZE,
 		.priv = priv,
 	};

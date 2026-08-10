@@ -1271,7 +1271,7 @@ static int pcf2127_probe(struct device *dev, struct regmap *regmap,
 		struct nvmem_config nvmem_cfg = {
 			.priv = pcf2127,
 			.reg_read = pcf2127_nvmem_read,
-			.reg_write_const = pcf2127_nvmem_write,
+			.reg_write = pcf2127_nvmem_write,
 			.size = 512,
 		};
 

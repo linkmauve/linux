@@ -703,7 +703,7 @@ static int sun6i_rtc_nvmem_write(void *priv, unsigned int offset, const void *_v
 static struct nvmem_config sun6i_rtc_nvmem_cfg = {
 	.type		= NVMEM_TYPE_BATTERY_BACKED,
 	.reg_read	= sun6i_rtc_nvmem_read,
-	.reg_write_const = sun6i_rtc_nvmem_write,
+	.reg_write = sun6i_rtc_nvmem_write,
 	.size		= SUN6I_GP_DATA_SIZE,
 	.word_size	= 4,
 	.stride		= 4,

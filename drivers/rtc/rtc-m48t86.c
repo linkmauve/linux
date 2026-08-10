@@ -226,7 +226,7 @@ static int m48t86_rtc_probe(struct platform_device *pdev)
 		.stride = 1,
 		.size = M48T86_NVRAM_LEN,
 		.reg_read = m48t86_nvram_read,
-		.reg_write_const = m48t86_nvram_write,
+		.reg_write = m48t86_nvram_write,
 		.priv = &pdev->dev,
 	};
 

@@ -45,7 +45,7 @@ static int apple_spmi_nvmem_probe(struct spmi_device *sdev)
 		.stride = 1,
 		.size = 0xffff,
 		.reg_read = apple_spmi_nvmem_read,
-		.reg_write_const = apple_spmi_nvmem_write,
+		.reg_write = apple_spmi_nvmem_write,
 	};
 
 	regmap = devm_regmap_init_spmi_ext(sdev, &apple_spmi_regmap_config);

@@ -439,7 +439,7 @@ static int isl12026_probe(struct i2c_client *client)
 		.word_size = 1,
 		.size = 512,
 		.reg_read = isl12026_nvm_read,
-		.reg_write_const = isl12026_nvm_write,
+		.reg_write = isl12026_nvm_write,
 	};
 
 	if (!i2c_check_functionality(client->adapter, I2C_FUNC_I2C))

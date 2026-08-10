@@ -223,7 +223,7 @@ static struct nvmem_config bcm_otpc_nvmem_config = {
 	.word_size = 4,
 	.stride = 4,
 	.reg_read = bcm_otpc_read,
-	.reg_write_const = bcm_otpc_write,
+	.reg_write = bcm_otpc_write,
 };
 
 static const struct of_device_id bcm_otpc_dt_ids[] = {

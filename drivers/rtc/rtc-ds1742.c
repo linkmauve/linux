@@ -149,7 +149,7 @@ static int ds1742_rtc_probe(struct platform_device *pdev)
 	struct nvmem_config nvmem_cfg = {
 		.name = "ds1742_nvram",
 		.reg_read = ds1742_nvram_read,
-		.reg_write_const = ds1742_nvram_write,
+		.reg_write = ds1742_nvram_write,
 	};
 
 

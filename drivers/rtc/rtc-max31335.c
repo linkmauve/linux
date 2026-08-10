@@ -586,7 +586,7 @@ static int max31335_nvmem_reg_write(void *priv, unsigned int offset,
 
 static struct nvmem_config max31335_nvmem_cfg = {
 	.reg_read = max31335_nvmem_reg_read,
-	.reg_write_const = max31335_nvmem_reg_write,
+	.reg_write = max31335_nvmem_reg_write,
 	.word_size = 8,
 	.size = MAX31335_RAM_SIZE,
 };

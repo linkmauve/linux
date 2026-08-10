@@ -469,7 +469,7 @@ static int ds3232_probe(struct device *dev, struct regmap *regmap, int irq,
 		.size = DS3232_REG_SRAM_SIZE,
 		.word_size = 1,
 		.reg_read = ds3232_nvmem_read,
-		.reg_write_const = ds3232_nvmem_write,
+		.reg_write = ds3232_nvmem_write,
 		.priv = regmap,
 		.type = NVMEM_TYPE_BATTERY_BACKED
 	};

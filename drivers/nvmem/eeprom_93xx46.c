@@ -510,7 +510,7 @@ static int eeprom_93xx46_probe(struct spi_device *spi)
 	edev->nvmem_config.compat = true;
 	edev->nvmem_config.base_dev = &spi->dev;
 	edev->nvmem_config.reg_read = eeprom_93xx46_read;
-	edev->nvmem_config.reg_write_const = eeprom_93xx46_write;
+	edev->nvmem_config.reg_write = eeprom_93xx46_write;
 	edev->nvmem_config.priv = edev;
 	edev->nvmem_config.stride = 4;
 	edev->nvmem_config.word_size = 1;

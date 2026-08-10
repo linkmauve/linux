@@ -174,7 +174,7 @@ static struct nvmem_config otp_config = {
 	.stride = 1,
 	.word_size = 1,
 	.reg_read = lan9662_otp_read,
-	.reg_write_const = lan9662_otp_write,
+	.reg_write = lan9662_otp_write,
 };
 
 static int lan9662_otp_probe(struct platform_device *pdev)

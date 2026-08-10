@@ -216,7 +216,7 @@ static int zynqmp_nvmem_probe(struct platform_device *pdev)
 	econfig.priv = dev;
 	econfig.add_legacy_fixed_of_cells = true;
 	econfig.reg_read = zynqmp_nvmem_read;
-	econfig.reg_write_const = zynqmp_nvmem_write;
+	econfig.reg_write = zynqmp_nvmem_write;
 
 	return PTR_ERR_OR_ZERO(devm_nvmem_register(dev, &econfig));
 }

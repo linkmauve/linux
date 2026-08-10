@@ -483,7 +483,7 @@ static struct nvmem_config imx_ocotp_nvmem_config = {
 	.word_size = 4,
 	.stride = 1,
 	.reg_read = imx_ocotp_read,
-	.reg_write_const = imx_ocotp_write,
+	.reg_write = imx_ocotp_write,
 };
 
 static const struct ocotp_params imx6q_params = {

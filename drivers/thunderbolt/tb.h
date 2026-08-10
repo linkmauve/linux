@@ -827,7 +827,7 @@ int tb_nvm_write_headers(struct tb_nvm *nvm);
 int tb_nvm_add_active(struct tb_nvm *nvm, nvmem_reg_read_t reg_read);
 int tb_nvm_write_buf(struct tb_nvm *nvm, unsigned int offset, const void *val,
 		     size_t bytes);
-int tb_nvm_add_non_active(struct tb_nvm *nvm, nvmem_reg_write_const_t reg_write);
+int tb_nvm_add_non_active(struct tb_nvm *nvm, nvmem_reg_write_t reg_write);
 void tb_nvm_free(struct tb_nvm *nvm);
 void tb_nvm_exit(void);
 

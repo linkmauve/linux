@@ -902,7 +902,7 @@ static int rv3032_probe(struct i2c_client *client)
 		.size = 16,
 		.type = NVMEM_TYPE_BATTERY_BACKED,
 		.reg_read = rv3032_nvram_read,
-		.reg_write_const = rv3032_nvram_write,
+		.reg_write = rv3032_nvram_write,
 	};
 	struct nvmem_config eeprom_cfg = {
 		.name = "rv3032_eeprom",
@@ -911,7 +911,7 @@ static int rv3032_probe(struct i2c_client *client)
 		.size = 32,
 		.type = NVMEM_TYPE_EEPROM,
 		.reg_read = rv3032_eeprom_read,
-		.reg_write_const = rv3032_eeprom_write,
+		.reg_write = rv3032_eeprom_write,
 	};
 
 	rv3032 = devm_kzalloc(&client->dev, sizeof(struct rv3032_data),

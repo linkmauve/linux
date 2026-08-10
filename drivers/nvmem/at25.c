@@ -544,7 +544,7 @@ static int at25_probe(struct spi_mem *mem)
 	at25->nvmem_config.compat = true;
 	at25->nvmem_config.base_dev = &spi->dev;
 	at25->nvmem_config.reg_read = at25_ee_read;
-	at25->nvmem_config.reg_write_const = at25_ee_write;
+	at25->nvmem_config.reg_write = at25_ee_write;
 	at25->nvmem_config.priv = at25;
 	at25->nvmem_config.stride = 1;
 	at25->nvmem_config.word_size = 1;

@@ -239,10 +239,10 @@ static int stm32_romem_probe(struct platform_device *pdev)
 				return rc;
 			}
 			priv->cfg.reg_read = stm32_bsec_pta_read;
-			priv->cfg.reg_write_const = stm32_bsec_pta_write;
+			priv->cfg.reg_write = stm32_bsec_pta_write;
 		} else {
 			priv->cfg.reg_read = stm32_bsec_read;
-			priv->cfg.reg_write_const = stm32_bsec_write;
+			priv->cfg.reg_write = stm32_bsec_write;
 		}
 	}
 

@@ -553,7 +553,7 @@ static int ds1305_probe(struct spi_device *spi)
 		.stride = 1,
 		.size = DS1305_NVRAM_LEN,
 		.reg_read = ds1305_nvram_read,
-		.reg_write_const = ds1305_nvram_write,
+		.reg_write = ds1305_nvram_write,
 	};
 
 	/* Sanity check board setup data.  This may be hooked up

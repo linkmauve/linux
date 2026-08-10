@@ -625,7 +625,7 @@ static int cp500_nvmem_register(struct cp500 *cp500,
 	nvmem_config.type = NVMEM_TYPE_EEPROM;
 	nvmem_config.root_only = true;
 	nvmem_config.reg_read = cp500_nvmem_read;
-	nvmem_config.reg_write_const = cp500_nvmem_write;
+	nvmem_config.reg_write = cp500_nvmem_write;
 
 	cp500->nvmem_cpu.base_nvmem = base_nvmem;
 	cp500->nvmem_cpu.offset = CP500_EEPROM_CPU_OFFSET;

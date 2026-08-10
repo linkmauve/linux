@@ -155,7 +155,7 @@ static struct nvmem_config lpc18xx_nvmem_config = {
 	.stride = 4,
 	.word_size = 4,
 	.reg_read = lpc18xx_eeprom_read,
-	.reg_write_const = lpc18xx_eeprom_gather_write,
+	.reg_write = lpc18xx_eeprom_gather_write,
 };
 
 static int lpc18xx_eeprom_probe(struct platform_device *pdev)

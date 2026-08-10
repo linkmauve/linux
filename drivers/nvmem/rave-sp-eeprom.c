@@ -331,7 +331,7 @@ static int rave_sp_eeprom_probe(struct platform_device *pdev)
 	config.add_legacy_fixed_of_cells	= true;
 	config.size		= size;
 	config.reg_read		= rave_sp_eeprom_reg_read;
-	config.reg_write_const	= rave_sp_eeprom_reg_write;
+	config.reg_write	= rave_sp_eeprom_reg_write;
 	config.word_size	= 1;
 	config.stride		= 1;
 

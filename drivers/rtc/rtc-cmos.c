@@ -940,7 +940,7 @@ cmos_do_probe(struct device *dev, struct resource *ports, int rtc_irq)
 		.word_size = 1,
 		.stride = 1,
 		.reg_read = cmos_nvram_read,
-		.reg_write_const = cmos_nvram_write,
+		.reg_write = cmos_nvram_write,
 		.priv = &cmos_rtc,
 	};
 

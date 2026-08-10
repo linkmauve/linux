@@ -348,7 +348,7 @@ static int m48t59_rtc_probe(struct platform_device *pdev)
 		.word_size = 1,
 		.stride = 1,
 		.reg_read = m48t59_nvram_read,
-		.reg_write_const = m48t59_nvram_write,
+		.reg_write = m48t59_nvram_write,
 		.priv = pdev,
 	};
 

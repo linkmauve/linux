@@ -714,7 +714,7 @@ static int rv3029_probe(struct device *dev, struct regmap *regmap, int irq,
 		.size = RV3029_RAM_SECTION_LEN,
 		.type = NVMEM_TYPE_BATTERY_BACKED,
 		.reg_read = rv3029_nvram_read,
-		.reg_write_const = rv3029_nvram_write,
+		.reg_write = rv3029_nvram_write,
 	};
 	int rc = 0;
 

@@ -226,7 +226,7 @@ static struct nvmem_config imx_scu_ocotp_nvmem_config = {
 	.stride = 1,
 	.owner = THIS_MODULE,
 	.reg_read = imx_scu_ocotp_read,
-	.reg_write_const = imx_scu_ocotp_write,
+	.reg_write = imx_scu_ocotp_write,
 };
 
 static const struct of_device_id imx_scu_ocotp_dt_ids[] = {
