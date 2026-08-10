@@ -18,8 +18,6 @@
 struct nvmem_device;
 typedef int (*nvmem_reg_read_t)(void *priv, unsigned int offset,
 				void *val, size_t bytes);
-typedef int (*nvmem_reg_write_t)(void *priv, unsigned int offset,
-				 void *val, size_t bytes);
 typedef int (*nvmem_reg_write_const_t)(void *priv, unsigned int offset,
 				       const void *val, size_t bytes);
 /* used for vendor specific post processing of cell data */
@@ -95,7 +93,6 @@ struct nvmem_cell_info {
  * @root_only:	Device is accessibly to root only.
  * @of_node:	If given, this will be used instead of the parent's of_node.
  * @reg_read:	Callback to read data; return zero if successful.
- * @reg_write:	**DEPRECATED** - please use reg_write_const instead.
  * @reg_write_const:	Callback to write data; return zero if successful.
  * @size:	Device size.
  * @word_size:	Minimum read/write access granularity.
@@ -130,7 +127,6 @@ struct nvmem_config {
 	struct nvmem_layout	*layout;
 	struct device_node	*of_node;
 	nvmem_reg_read_t	reg_read;
-	nvmem_reg_write_t	reg_write;
 	nvmem_reg_write_const_t	reg_write_const;
 	int	size;
 	int	word_size;
