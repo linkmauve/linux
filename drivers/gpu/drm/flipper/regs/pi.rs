@@ -4,53 +4,25 @@
 // future.
 //#![allow(dead_code)]
 
+use crate::impl_bounded;
 use kernel::{
     io::Region,
     num,
     register, //
 };
 
-#[derive(Debug)]
-#[repr(u32)]
-enum ErrorCause {
-    NoError = 0,
-    MisalignedAddress = 1,
-    IncorrectTransferType = 2,
-    UnsupportedTransferSize = 3,
-    AddressOutOfRange = 4,
-    WriteToROM = 5,
-    ReadFromGXFIFO = 6,
-    Reserved = 7,
-}
-
-impl From<num::Bounded<u32, 3>> for ErrorCause {
-    fn from(num: num::Bounded<u32, 3>) -> ErrorCause {
-        match num.get() {
-            0 => ErrorCause::NoError,
-            1 => ErrorCause::MisalignedAddress,
-            2 => ErrorCause::IncorrectTransferType,
-            3 => ErrorCause::UnsupportedTransferSize,
-            4 => ErrorCause::AddressOutOfRange,
-            5 => ErrorCause::WriteToROM,
-            6 => ErrorCause::ReadFromGXFIFO,
-            7 => ErrorCause::Reserved,
-            _ => unreachable!("ErrorCause can only have up to three bits!"),
-        }
-    }
-}
-
-impl From<ErrorCause> for num::Bounded<u32, 3> {
-    fn from(error: ErrorCause) -> num::Bounded<u32, 3> {
-        match error {
-            ErrorCause::NoError => num::Bounded::<u32, 3>::new::<0>(),
-            ErrorCause::MisalignedAddress => num::Bounded::<u32, 3>::new::<1>(),
-            ErrorCause::IncorrectTransferType => num::Bounded::<u32, 3>::new::<2>(),
-            ErrorCause::UnsupportedTransferSize => num::Bounded::<u32, 3>::new::<3>(),
-            ErrorCause::AddressOutOfRange => num::Bounded::<u32, 3>::new::<4>(),
-            ErrorCause::WriteToROM => num::Bounded::<u32, 3>::new::<5>(),
-            ErrorCause::ReadFromGXFIFO => num::Bounded::<u32, 3>::new::<6>(),
-            ErrorCause::Reserved => num::Bounded::<u32, 3>::new::<7>(),
-        }
+impl_bounded! {
+    #[repr(u32)]
+    #[bits(3)]
+    enum ErrorCause {
+        NoError = 0,
+        MisalignedAddress = 1,
+        IncorrectTransferType = 2,
+        UnsupportedTransferSize = 3,
+        AddressOutOfRange = 4,
+        WriteToROM = 5,
+        ReadFromGXFIFO = 6,
+        Reserved = 7,
     }
 }
 

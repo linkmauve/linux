@@ -4,67 +4,29 @@
 // future.
 //#![allow(dead_code)]
 
+use crate::impl_bounded;
 use kernel::{
     io::Region,
-    num,
     register, //
 };
 
-#[derive(Debug)]
-#[repr(u16)]
-enum Format {
-    Ntsc = 0,
-    Pal = 1,
-    MPal = 2,
-    Debug = 3,
-}
-
-impl From<num::Bounded<u16, 2>> for Format {
-    fn from(num: num::Bounded<u16, 2>) -> Format {
-        match num.get() {
-            0 => Format::Ntsc,
-            1 => Format::Pal,
-            2 => Format::MPal,
-            3 => Format::Debug,
-            _ => unreachable!("Format can only have up to two bits!"),
-        }
+impl_bounded! {
+    #[repr(u16)]
+    #[bits(2)]
+    enum Format {
+        Ntsc = 0,
+        Pal = 1,
+        MPal = 2,
+        Debug = 3,
     }
 }
 
-impl From<Format> for num::Bounded<u16, 2> {
-    fn from(mode: Format) -> num::Bounded<u16, 2> {
-        match mode {
-            Format::Ntsc => num::Bounded::<u16, 2>::new::<0>(),
-            Format::Pal => num::Bounded::<u16, 2>::new::<1>(),
-            Format::MPal => num::Bounded::<u16, 2>::new::<2>(),
-            Format::Debug => num::Bounded::<u16, 2>::new::<3>(),
-        }
-    }
-}
-
-#[derive(Debug)]
-#[repr(u16)]
-enum Clock {
-    _27MHz = 0,
-    _54MHz = 1,
-}
-
-impl From<num::Bounded<u16, 1>> for Clock {
-    fn from(num: num::Bounded<u16, 1>) -> Clock {
-        match num.get() {
-            0 => Clock::_27MHz,
-            1 => Clock::_54MHz,
-            _ => unreachable!("Clock can only have up to one bit!"),
-        }
-    }
-}
-
-impl From<Clock> for num::Bounded<u16, 1> {
-    fn from(mode: Clock) -> num::Bounded<u16, 1> {
-        match mode {
-            Clock::_27MHz => num::Bounded::<u16, 1>::new::<0>(),
-            Clock::_54MHz => num::Bounded::<u16, 1>::new::<1>(),
-        }
+impl_bounded! {
+    #[repr(u16)]
+    #[bits(1)]
+    enum Clock {
+        _27MHz = 0,
+        _54MHz = 1,
     }
 }
 
@@ -300,33 +262,33 @@ register! {
 
     /// TODO
     pub(crate) FILTER_COEF_3(u32) @ 0x58 {
-        31:24   tap12;
-        23:16   tap11;
-        15:8    tap10;
-        7:0     tap9;
+        31:24   tap12 => u8;
+        23:16   tap11 => u8;
+        15:8    tap10 => u8;
+        7:0     tap9 => u8;
     }
 
     /// TODO
     pub(crate) FILTER_COEF_4(u32) @ 0x5c {
-        31:24   tap16;
-        23:16   tap15;
-        15:8    tap14;
-        7:0     tap13;
+        31:24   tap16 => u8;
+        23:16   tap15 => u8;
+        15:8    tap14 => u8;
+        7:0     tap13 => u8;
     }
 
     /// TODO
     pub(crate) FILTER_COEF_5(u32) @ 0x60 {
-        31:24   tap20;
-        23:16   tap19;
-        15:8    tap18;
-        7:0     tap17;
+        31:24   tap20 => u8;
+        23:16   tap19 => u8;
+        15:8    tap18 => u8;
+        7:0     tap17 => u8;
     }
 
     /// TODO
     pub(crate) FILTER_COEF_6(u32) @ 0x64 {
-        23:16   tap23;
-        15:8    tap22;
-        7:0     tap21;
+        23:16   tap23 => u8;
+        15:8    tap22 => u8;
+        7:0     tap21 => u8;
     }
 
     /// TODO
