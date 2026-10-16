@@ -218,6 +218,7 @@ int flipper_kms_init(struct drm_device *drm, struct vi_ctl *ctl)
 	drm->mode_config.max_width = 720;
 	drm->mode_config.max_height = 576;
 	drm->mode_config.preferred_depth = 16;
+	drm->mode_config.quirk_addfb_prefer_host_byte_order = 1;
 	drm->mode_config.funcs = &flipper_mode_config_funcs;
 
 	error = drm_connector_init(drm, &kms->connector,
