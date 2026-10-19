@@ -263,6 +263,7 @@ macro_rules! impl_const_new {
                 ", 4>::new::<7>();")]
             /// assert_eq!(v.get(), 7);
             /// ```
+            #[inline]
             pub const fn new<const VALUE: $type>() -> Self {
                 // Statically assert that `VALUE` fits within the set number of bits.
                 const_assert!(fits_within!(VALUE, $type, N));
@@ -293,6 +294,7 @@ where
     /// # Safety
     ///
     /// The caller must ensure that `value` can be represented within `N` bits.
+    #[inline]
     const unsafe fn __new(value: T) -> Self {
         // Enforce the type invariants.
         // `N` cannot be zero.
@@ -334,6 +336,7 @@ where
     /// let v = Bounded::<i8, 4>::try_new(8);
     /// assert_eq!(v, None);
     /// ```
+    #[inline]
     pub fn try_new(value: T) -> Option<Self> {
         fits_within(value, N).then(|| {
             // SAFETY: `fits_within` confirmed that `value` can be represented within `N` bits.
@@ -396,6 +399,7 @@ where
     /// let v = Bounded::<u32, 4>::new::<7>();
     /// assert_eq!(v.get(), 7u32);
     /// ```
+    #[inline]
     pub const fn get(self) -> T {
         self.0
     }
@@ -414,6 +418,7 @@ where
     /// // The contained values are equal even though `larger_v` has a bigger capacity.
     /// assert_eq!(larger_v, v);
     /// ```
+    #[inline]
     pub const fn extend<const M: u32>(self) -> Bounded<T, M> {
         const_assert!(
             M >= N,
@@ -443,6 +448,7 @@ where
     /// // ... but doesn't fit within `2` bits.
     /// assert_eq!(v.try_shrink::<2>(), None);
     /// ```
+    #[inline]
     pub fn try_shrink<const M: u32>(self) -> Option<Bounded<T, M>> {
         Bounded::<T, M>::try_new(self.get())
     }
@@ -466,6 +472,7 @@ where
     /// // This won't build: a `u8` is smaller than the required 12 bits.
     /// // let _: Bounded<u8, 12> = v.cast();
     /// ```
+    #[inline]
     pub fn cast<U>(self) -> Bounded<U, N>
     where
         U: TryFrom<T> + Integer,
@@ -494,6 +501,7 @@ where
     ///
     /// assert_eq!(v_shifted.get(), 0xff);
     /// ```
+    #[inline]
     pub fn shr<const SHIFT: u32, const RES: u32>(self) -> Bounded<T, RES> {
         const_assert!(SHIFT < T::BITS);
         const_assert!(RES + SHIFT >= N);
@@ -547,6 +555,7 @@ where
     ///
     /// assert_eq!(v_shifted.get(), 0xff00);
     /// ```
+    #[inline]
     pub fn shl<const SHIFT: u32, const RES: u32>(self) -> Bounded<T, RES> {
         const_assert!(RES >= N + SHIFT);
 
