@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0 or MIT
 
+use core::arch::asm;
 use kernel::{
     device::{
         Bound,
@@ -12,6 +13,7 @@ use kernel::{
         mem::IoMem,
         BigEndianMmio,
         Io,
+        IoBase,
         Region, //
     },
     of,
@@ -32,7 +34,10 @@ use crate::{
     },
     gem::Bo,
     gx::GxQueue,
-    regs, //
+    regs::{
+        self,
+        pe, //
+    }, //
 };
 
 pub(crate) struct FlipperDrmDriver;
@@ -90,6 +95,23 @@ impl PinnedDrop for FlipperDrmRegistrationData<'_> {
     }
 }
 
+macro_rules! mfspr {
+    ($R:tt) => {{
+        let mut output: u32;
+        // SAFETY: TODO
+        unsafe { asm!(concat!("mfspr {0}, ", stringify!($R)), out(reg) output, options(nostack)) };
+        output
+    }}
+}
+
+macro_rules! mtspr {
+    ($R:tt, $v:tt) => {{
+        let input: u32 = $v;
+        // SAFETY: TODO
+        unsafe { asm!(concat!("mtspr ", stringify!($R), ", {0}"), in(reg) input, options(nostack)) };
+    }}
+}
+
 /*
 fn bp(wg_pipe: &IoMem<4>, reg: u8, value: u32) {
     let data = ((reg as u32) << 24) | (value & 0x00ffffff);
@@ -116,6 +138,7 @@ fn draw_triangle(wg_pipe: &IoMem<4>, vertices: &[[u8; 2]]) {
 }
 */
 
+#[inline(never)]
 pub(crate) fn print_cp_regs(cp: &BigEndianMmio<'_, Region<0x80>>) {
     let reg_00 = cp.read(regs::cp::STATUS);
     let reg_02 = cp.read(regs::cp::CONTROL);
@@ -151,18 +174,19 @@ pub(crate) fn print_cp_regs(cp: &BigEndianMmio<'_, Region<0x80>>) {
     pr_info!("CP: 3c: 0x{reg_3e:04x}{reg_3c:04x}\n");
 }
 
+#[inline(never)]
 pub(crate) fn print_pe_regs(pe: &BigEndianMmio<'_, Region<0x100>>) {
-    let reg_00 = pe.read(regs::pe::ZCONF);
-    let reg_02 = pe.read(regs::pe::ALPHA_CONF);
-    let reg_04 = pe.read(regs::pe::DST_ALPHA_CONF);
-    let reg_06 = pe.read(regs::pe::ALPHA_MODE);
-    let reg_08 = pe.read(regs::pe::ALPHA_READ);
-    let reg_0a = pe.read(regs::pe::CONTROL);
-    let reg_0e = pe.read(regs::pe::TOKEN);
-    let reg_10 = pe.read(regs::pe::BBOX_LEFT);
-    let reg_12 = pe.read(regs::pe::BBOX_RIGHT);
-    let reg_14 = pe.read(regs::pe::BBOX_TOP);
-    let reg_16 = pe.read(regs::pe::BBOX_BOTTOM);
+    let reg_00 = pe.read(pe::ZCONF);
+    let reg_02 = pe.read(pe::ALPHA_CONF);
+    let reg_04 = pe.read(pe::DST_ALPHA_CONF);
+    let reg_06 = pe.read(pe::ALPHA_MODE);
+    let reg_08 = pe.read(pe::ALPHA_READ);
+    let reg_0a = pe.read(pe::CONTROL);
+    let reg_0e = pe.read(pe::TOKEN);
+    let reg_10 = pe.read(pe::BBOX_LEFT);
+    let reg_12 = pe.read(pe::BBOX_RIGHT);
+    let reg_14 = pe.read(pe::BBOX_TOP);
+    let reg_16 = pe.read(pe::BBOX_BOTTOM);
     pr_info!("PE: 00: {reg_00:?}\n");
     pr_info!("PE: 02: {reg_02:?}\n");
     pr_info!("PE: 04: {reg_04:?}\n");
@@ -176,6 +200,7 @@ pub(crate) fn print_pe_regs(pe: &BigEndianMmio<'_, Region<0x100>>) {
     pr_info!("PE: 16: {reg_16:?}\n");
 }
 
+#[inline(never)]
 pub(crate) fn print_pi_regs(pi: &BigEndianMmio<'_, Region<0x100>>) {
     let reg_00 = pi.read(regs::pi::INTERRUPT_CAUSE);
     let reg_04 = pi.read(regs::pi::INTERRUPT_MASK);
@@ -204,6 +229,7 @@ pub(crate) fn print_pi_regs(pi: &BigEndianMmio<'_, Region<0x100>>) {
     pr_info!("PI: 30: {reg_30:x?}\n");
 }
 
+#[inline(never)]
 pub(crate) fn print_vi_regs(vi: &BigEndianMmio<'_, Region<0x100>>) {
     let reg_00 = vi.read(regs::vi::VERTICAL_TIMING);
     let reg_02 = vi.read(regs::vi::CONTROL);
@@ -276,6 +302,194 @@ pub(crate) fn print_vi_regs(vi: &BigEndianMmio<'_, Region<0x100>>) {
     pr_info!("VI: 72: {reg_72:?}\n");
     pr_info!("VI: 74: {reg_74:?}\n");
 }
+
+#[inline(never)]
+fn setup_fifo(
+    pdev: &platform::Device<Core<'_>>,
+    //fifo: &NonNull<[u8]>,
+    cp_regs: &Arc<IoMem<'_, 128>>,
+    pe_regs: &Arc<IoMem<'_, 256>>,
+    pi_regs: &Arc<IoMem<'_, 256>>,
+    vi_regs: &Arc<IoMem<'_, 256>>,
+    wg_pipe: &Arc<IoMem<'_, 4>>,
+) -> Result<u32> {
+    // Enable the write-gather pipe (HID2[WPE]). Once enabled, the CPU sees the write-gather
+    // pipe, not the PI FIFO, at the address in WPAR: stores there are collected by the pipe, and
+    // it issues burst transactions to that address once enough data has accumulated.
+    let hid2 = mfspr!(920) | 0x4000_0000;
+    dev_info!(pdev, "HID2 = 0x{hid2:08x}");
+    mtspr!(920, hid2);
+
+    // Point the write-gather pipe's bursts at the PI FIFO register block (0x0c008000). That
+    // is where the pipe's output lands on the bus; the PI FIFO itself is what's there, from the
+    // bus's perspective. Hardcoded in the device-tree…
+    mtspr!(921, 0x0c008000);
+    const FIFO_BASE: u32 = 0x01734000;
+    const FIFO_BASE_LO: u16 = (FIFO_BASE & 0xffff) as u16;
+    const FIFO_BASE_HI: u16 = (FIFO_BASE >> 16) as u16;
+    const FIFO_END: u32 = 0x01774000;
+    const FIFO_END_LO: u16 = (FIFO_END & 0xffff) as u16;
+    const FIFO_END_HI: u16 = (FIFO_END >> 16) as u16;
+    const HI_WATERMARK: u32 = (FIFO_END - FIFO_BASE) * 3 / 4;
+    const HI_WATERMARK_LO: u16 = (HI_WATERMARK & 0xffff) as u16;
+    const HI_WATERMARK_HI: u16 = (HI_WATERMARK >> 16) as u16;
+
+    /*
+    let fifo_start = unsafe { vmalloc_to_phys(fifo.as_ptr() as *mut c_void) };
+    let fifo_end = fifo_start + fifo.len() as u32;
+    let hi_watermark = (fifo_end - fifo_start) * 3 / 4;
+    dev_info!(pdev, "0x{fifo_start:08x} to 0x{fifo_end:08x}\n");
+    */
+
+    let cp = cp_regs.as_view().big_endian();
+    let pe = pe_regs.as_view().big_endian();
+    let pi = pi_regs.as_view().big_endian();
+    let vi = vi_regs.as_view().big_endian();
+    let wg_pipe = wg_pipe.as_view().big_endian();
+
+    print_cp_regs(&cp);
+    print_pe_regs(&pe);
+    print_pi_regs(&pi);
+    print_vi_regs(&vi);
+
+    // FIFO Control
+    cp.write_reg(regs::cp::CONTROL::zeroed());
+    cp.write_reg(
+        regs::cp::CLEAR::zeroed()
+            .with_fifo_underflow(true)
+            .with_fifo_overflow(true),
+    );
+
+    // FIFO Start
+    cp.write_reg(regs::cp::FIFO_BASE_LO::zeroed().with_const_lo::<FIFO_BASE_LO>());
+    cp.write_reg(regs::cp::FIFO_BASE_HI::zeroed().with_const_hi::<FIFO_BASE_HI>());
+
+    // FIFO End
+    cp.write_reg(regs::cp::FIFO_END_LO::zeroed().with_const_lo::<FIFO_END_LO>());
+    cp.write_reg(regs::cp::FIFO_END_HI::zeroed().with_const_hi::<FIFO_END_HI>());
+
+    // Set watermarks, high at 75%, low at 0%
+    cp.write_reg(regs::cp::FIFO_HI_WATERMARK_LO::zeroed().with_const_lo::<HI_WATERMARK_LO>());
+    cp.write_reg(regs::cp::FIFO_HI_WATERMARK_HI::zeroed().with_const_hi::<HI_WATERMARK_HI>());
+    cp.write_reg(regs::cp::FIFO_LO_WATERMARK_LO::zeroed());
+    cp.write_reg(regs::cp::FIFO_LO_WATERMARK_HI::zeroed());
+
+    // Set R/W pointers to fifo start
+    cp.write_reg(regs::cp::FIFO_RW_DISTANCE_LO::zeroed());
+    cp.write_reg(regs::cp::FIFO_RW_DISTANCE_HI::zeroed());
+    cp.write_reg(regs::cp::FIFO_WRITE_POINTER_LO::zeroed().with_const_lo::<FIFO_BASE_LO>());
+    cp.write_reg(regs::cp::FIFO_WRITE_POINTER_HI::zeroed().with_const_hi::<FIFO_BASE_HI>());
+    cp.write_reg(regs::cp::FIFO_READ_POINTER_LO::zeroed().with_const_lo::<FIFO_BASE_LO>());
+    cp.write_reg(regs::cp::FIFO_READ_POINTER_HI::zeroed().with_const_hi::<FIFO_BASE_HI>());
+
+    // Set the PI FIFO bounds (this is where the write-gather pipe's bursts end up)
+    pi.write_reg(regs::pi::FIFO_BASE::zeroed().with_const_address::<FIFO_BASE>());
+    pi.write_reg(regs::pi::FIFO_END::zeroed().with_const_address::<FIFO_END>());
+
+    // Set the PI FIFO write pointer
+    pi.write_reg(regs::pi::FIFO_WPTR::zeroed().with_const_address::<FIFO_BASE>());
+
+    cp.write_reg(
+        regs::cp::CONTROL::zeroed()
+            .with_gple(true)
+            .with_fifo_enable(true),
+    );
+
+    // enable read & GP link
+    cp.write_reg(
+        regs::cp::STATUS::zeroed()
+            .with_breakpoint(true)
+            .with_overflow_hi_watermark(true),
+    );
+
+    pe.write_reg(
+        pe::ZCONF::zeroed()
+            .with_z_update_enable(true)
+            .with_function(pe::CompareMode::Always)
+            .with_z_comparator_enable(true),
+    );
+    pe.write_reg(
+        pe::ALPHA_CONF::zeroed()
+            .with_logic_op(pe::LogicOp::Set)
+            .with_src_factor(pe::SrcBlendFactor::One)
+            .with_alpha_update_enable(true)
+            .with_color_update_enable(true),
+    );
+    pe.write_reg(pe::DST_ALPHA_CONF::zeroed());
+    pe.write_reg(pe::ALPHA_MODE::zeroed().with_compare_mode(pe::CompareMode::Always));
+    pe.write_reg(
+        pe::ALPHA_READ::zeroed()
+            .with_read_mode(pe::AlphaReadMode::ReadFF)
+            .with_unknown(true),
+    );
+
+    let flipper_rev = match pi.read(regs::pi::FLIPPER_REV) {
+        regs::pi::FLIPPER_REV::A => 'A',
+        regs::pi::FLIPPER_REV::B => 'B',
+        regs::pi::FLIPPER_REV::C => 'C',
+        _ => '?',
+    };
+    dev_info!(pdev, "Flipper rev: {flipper_rev}\n");
+
+    pe.write_reg(
+        pe::CONTROL::zeroed()
+            .with_token_enable(true)
+            .with_finish_enable(true)
+            .with_token(true)
+            .with_finish(true),
+    );
+
+    print_cp_regs(&cp);
+    print_pe_regs(&pe);
+    print_pi_regs(&pi);
+
+    Ok(0)
+}
+
+/*
+// Draw a triangle!
+bp(wg_pipe, 0x40, 0x000017);
+bp(wg_pipe, 0x41, 0x0004bc);
+bp(wg_pipe, 0x43, 0x000040);
+for _ in 0..8 {
+    wg_pipe.write32(0, 0);
+}
+xf(
+    wg_pipe,
+    0x101a,
+    &[
+        0x43a00000, 0xc3700000, 0x4b7fffff, 0x44258000, 0x44118000, 0x4b7fffff,
+    ],
+);
+wg_pipe.write32(0x48, 0);
+bp(wg_pipe, 0x0f, 0x000000);
+bp(wg_pipe, 0x66, 0x001000);
+bp(wg_pipe, 0x66, 0x001100);
+bp(wg_pipe, 0x0f, 0x000000);
+xf(
+    wg_pipe,
+    0x0000,
+    &[
+        0x3f7fffff, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x3f7ffffe, 0x00000000,
+        0x00000000, 0x00000000, 0x00000000, 0x3f7fffff, 0xc247ffff,
+    ],
+);
+draw_triangle(wg_pipe, &[[0, 0], [1, 1], [2, 2]]);
+bp(wg_pipe, 0x45, 0x000002);
+for _ in 0..8 {
+    wg_pipe.write32(0, 0);
+}
+bp(wg_pipe, 0x40, 0x000017);
+bp(wg_pipe, 0x41, 0x0004bc);
+bp(wg_pipe, 0x40, 0x00001f);
+bp(wg_pipe, 0x41, 0x0004bc);
+bp(wg_pipe, 0x43, 0x000000);
+bp(wg_pipe, 0x49, 0x000000);
+bp(wg_pipe, 0x4a, 0x077e7f);
+bp(wg_pipe, 0x4d, 0x000028);
+bp(wg_pipe, 0x4b, 0xbba000);
+bp(wg_pipe, 0x52, 0x004c03);
+*/
 
 kernel::of_device_table!(
     OF_TABLE,
@@ -380,6 +594,8 @@ impl platform::Driver for FlipperPlatformDriver {
         let unreg_dev = drm::UnregisteredDevice::<FlipperDrmDriver>::new(pdev, Ok(()))?;
         let drm_raw = unreg_dev.as_raw();
         let drm_ref: ARef<FlipperDrmDevice> = (&*unreg_dev).into();
+
+        setup_fifo(pdev, &cp_regs, &pe_regs, &pi_regs, &vi_regs, &wg_pipe)?;
 
         // GX, VI and the interrupts are brought up by gcnfb.c. It must be dropped before the
         // mappings and the GX queue it uses, which is the case for locals (and the reg data).

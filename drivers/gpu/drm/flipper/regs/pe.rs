@@ -134,6 +134,7 @@ register! {
     /// Alpha read
     pub(crate) ALPHA_READ(u16) @ 0x08 {
         1:0 read_mode => AlphaReadMode;
+        2:2 unknown => bool;
     }
 
     /// TODO
