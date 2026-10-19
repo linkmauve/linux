@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0 or MIT
 
 use kernel::{
-    bindings,
     device::{
         Bound,
         Core,
@@ -15,14 +14,12 @@ use kernel::{
         Io,
         Region, //
     },
-    new_mutex,
     of,
     platform,
     prelude::*,
     sync::{
         aref::ARef,
-        Arc,
-        Mutex, //
+        Arc, //
     }, //
 };
 
@@ -77,12 +74,6 @@ pub(crate) struct FlipperDrmRegistrationData<'drm> {
     //pub(crate) xfb: NonNull<[u8]>,
     /// Embedded framebuffer, the VRAM pretty much.
     pub(crate) efb: Arc<IoMem<'drm, 0x400000>>,
-
-    #[pin]
-    pub(crate) pos_vec: Mutex<KVec<u8>>,
-
-    #[pin]
-    pub(crate) color_vec: Mutex<KVec<u8>>,
 
     /// Keeps the DRM device alive until the outputs have been turned off in `drop()`.
     drm: ARef<FlipperDrmDevice>,
@@ -386,25 +377,6 @@ impl platform::Driver for FlipperPlatformDriver {
         }
         */
 
-        let mut pos_vec = KVec::from_elem(0u8, 32, GFP_KERNEL)?;
-        let mut color_vec = KVec::from_elem(0u8, 32, GFP_KERNEL)?;
-
-        // SAFETY: TODO
-        let pos_phys = unsafe { bindings::vmalloc_to_phys(pos_vec.as_mut_ptr().cast()) };
-        dev_info!(
-            pdev,
-            "Got pos_vec at {:p}, and pos_phys at 0x{pos_phys:08x}",
-            pos_vec.as_ptr()
-        );
-
-        // SAFETY: TODO
-        let color_phys = unsafe { bindings::vmalloc_to_phys(color_vec.as_mut_ptr().cast()) };
-        dev_info!(
-            pdev,
-            "Got color_vec at {:p}, and color_phys at 0x{color_phys:08x}",
-            color_vec.as_ptr()
-        );
-
         let unreg_dev = drm::UnregisteredDevice::<FlipperDrmDriver>::new(pdev, Ok(()))?;
         let drm_raw = unreg_dev.as_raw();
         let drm_ref: ARef<FlipperDrmDevice> = (&*unreg_dev).into();
@@ -447,8 +419,6 @@ impl platform::Driver for FlipperPlatformDriver {
                     //fifo,
                     //xfb,
                     efb,
-                    pos_vec <- new_mutex!(pos_vec),
-                    color_vec <- new_mutex!(color_vec),
                     drm: drm_ref,
                 }),
             )},

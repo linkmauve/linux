@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0 or MIT
 
 use kernel::{
-    bindings,
     drm::{
         self,
         Registered, //
@@ -91,31 +90,7 @@ impl FlipperDrmFileData {
                             // CP
                             0x08 => {
                                 let reg: u8 = reader.read()?;
-                                let mut value: u32 = reader.read()?;
-                                // Warning: huge hack!
-                                if reg == 0xa0 {
-                                    let old_value = value;
-                                    let mut pos_vec = reg_data.pos_vec.lock();
-                                    //value = POS_ADDR;
-                                    // SAFETY: TODO
-                                    value = unsafe {
-                                        bindings::vmalloc_to_phys(
-                                            pos_vec.as_mut_ptr().cast::<c_void>(),
-                                        )
-                                    } as u32;
-                                    pr_debug!("Patching CP 0x{reg:02x} from 0x{old_value:08x} to 0x{value:08x}\n");
-                                } else if reg == 0xa2 {
-                                    let old_value = value;
-                                    let mut color_vec = reg_data.color_vec.lock();
-                                    //value = COLOR_ADDR;
-                                    // SAFETY: TODO
-                                    value = unsafe {
-                                        bindings::vmalloc_to_phys(
-                                            color_vec.as_mut_ptr().cast::<c_void>(),
-                                        )
-                                    } as u32;
-                                    pr_debug!("Patching CP 0x{reg:02x} from 0x{old_value:08x} to 0x{value:08x}\n");
-                                }
+                                let value: u32 = reader.read()?;
                                 //pr_info!("FIFO: Set CP 0x{reg:02x} to 0x{value:08x}\n");
                                 wg_pipe.write8(command, 0x0);
                                 wg_pipe.write8(reg, 0x0);
@@ -184,23 +159,7 @@ impl FlipperDrmFileData {
                 }
                 /*
                 uapi::drm_flipper_command_UPDATE_VERTEX => {
-                    if i == 1 {
-                        //let mut pos_vec = KVec::with_capacity(32, GFP_KERNEL)?;
-                        reader.read_all(&mut *tdev.pos_vec.borrow_mut(), GFP_KERNEL)?;
-
-                        //let pos_ptr = unsafe { bindings::ioremap(POS_ADDR, 0x800) };
-                        //unsafe { core::ptr::copy_nonoverlapping(pos_vec.as_ptr(), pos_ptr.cast(), 32) };
-                        //unsafe { bindings::iounmap(pos_ptr) };
-                    } else if i == 2 {
-                        //let mut color_vec = KVec::with_capacity(32, GFP_KERNEL)?;
-                        reader.read_all(&mut *tdev.color_vec.borrow_mut(), GFP_KERNEL)?;
-
-                        //let color_ptr = unsafe { bindings::ioremap(COLOR_ADDR, 0x800) };
-                        //unsafe { core::ptr::copy_nonoverlapping(color_vec.as_ptr(), color_ptr.cast(), 32) };
-                        //unsafe { bindings::iounmap(color_ptr) };
-                    } else {
-                        return Err(EFAULT);
-                    }
+                    return Err(EFAULT);
                 }
                 */
                 _ => return Err(EINVAL),
